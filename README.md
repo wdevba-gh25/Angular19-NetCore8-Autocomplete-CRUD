@@ -1,126 +1,113 @@
-# Angular 19 + Material UI + .NET 8 — Full-Stack CRUD Demo (Employee Management)
+# Angular 19 .Net Core8 Autocomplete + CRUD
 
-A compact full-stack demo app built to practice **Angular 19 + Angular Material** patterns and wire them to a **.NET 8 Web API** backed by **SQL Server**.
+## Table of Contents
+- [About](#about)
+- [InstallationUsage](#installationusage)
+- [Highlights](#highlights)
+- [Contributing](#contributing)
+- [License](#license)
 
-It’s intentionally small (demo/practice scope), but it covers real full-stack mechanics: routing, service calls, modal forms, and a working CRUD API.
+## About
+This Angular 19 app is a demo of both a CRUD and a .NET Core 8 API endpoint and an Autocomplete control. This control also implements the "debounce timer" feature which allows you to enter a string in an input text and the app will delay the search of data based on that string for 5 seconds. That was intentionally made for DEMO purposes.
 
-## What this demonstrates
-- **Angular 19 + Angular Material UI** pages with routing
-- **Service-based HTTP integration** to a .NET 8 Web API
-- **Employee CRUD** (list + add/edit modal + delete)
-- **SQL Server** persistence via EF Core (DbContext)
+## InstallationUsage
 
-## Screenshots
-> Files already exist under `Screen Captures/` in this repo.
+  Previous requirements:
 
-### Employee CRUD
-![Employee CRUD](Screen%20Captures/Employee%20CRUD.png)
+  THE .NET 8 FRAMEWORK MUST BE INSTALLED.
+  EXPLORER BY DEFAULT, GOOGLE CHROME.
+  Visual Studio 2022 Community.
+  Visual Studio Code.
+  SQL Server 2014 or higher.
+  SQL Management Studio v17.8.1 or higher.
+  NodeJS v 22.6.0 for windows 10.
+  Angular 19 installed locally, not globally, with npx command.
+  
+1. Download the ZIP file of this project.
+IMPORTANT: 
+        By default only the Autocomplete part of this demo works.
+        Please follow the instructions in order to test the second part of this demo:
+        Employee CRUD. 
 
-### Autocomplete (Material)
-![Autocomplete](Screen%20Captures/Autocomplete.png)
+WARNING: Before running the NG server, make sure you're running the Employee.Api WEB API, coming along with this demo and also make sure you have installed the DB "TestDb" on your local SQL server. You may or may not need to make some adjustments on your connection strings inside the Employee.Api.
 
-### Input (Material)
-![Input](Screen%20Captures/Input.png)
 
-## Tech stack
-- Frontend: **Angular 19**, TypeScript, Angular Material, RxJS
-- Backend: **.NET 8 Web API**, Entity Framework Core
-- Database: **SQL Server** (Local / Express)
+- The CRUD part presents the classic Create-Read-Update-Delete operations for a Company's employee. The operations work by calling their corresponding APIs on an Employee.Api WEB API .NET Core 8 application.
 
----
 
-## Quickstart (local)
+        1. Run your NG server with the command: npx ng s
 
-### 1) Run the API (.NET 8)
-Open the solution:
+        2. Open a browser and go to the link:
 
-`API/Employee.Api/Employee.Api.sln`
+                http://localhost:4200
 
-Update the connection string in:
+        3. You can type the string "car_" or "count" in the input box then wait for about 5 seconds
+        and you will see a list of car brands or a list of countries.
 
-`API/Employee.Api/Employee.Api/appsettings.json`
 
-Example for SQL Server Express on your machine:
 
-```json
-"ConnectionStrings": {
-  "testCon": "Server=HP01\\SQLEXPRESS;Database=NG19_TestDb;MultipleActiveResultSets=true;Trusted_Connection=True;TrustServerCertificate=True"
-}
-```
+- The Autocomplete part has the following interesting features:
 
-Run the API (Visual Studio or CLI):
+    1. Debounce timer: Prevents sending requests on every single
+                       keypress!
+    2. Input control: Implements several Angular features to give the best possible user experience, like:
 
-```bash
-dotnet run --project API/Employee.Api/Employee.Api/Employee.Api.csproj
-```
+        [(ngModel)] TWO WAY data BINDING,
+        (ngModelChange),
+        (keyup),
+        (blur),
+        (focus),
+        [ngClass],
+        (input) 
 
-Expected default URLs (from `launchSettings.json`):
-- HTTPS: `https://localhost:7271`
-- HTTP: `http://localhost:5032`
 
-Sanity check:
+    3. List Items: Classic list-item control implementing ngClass to
+                     select items. This list will be displayed only if there are items to be displayed. Items returned as response to the Request made against the endpoint used to get items from the Employee.Api WEB API .NET Core 8 application.
 
-```bash
-curl -k https://localhost:7271/api/employeemaster
-```
+    4. Output EventEmitter: It is programmed to emit an event
+                         whenever the Child function selectItem is called to SELECT AN ITEM.
+                         The parent on the other hand will GET the notified event from the Child by implementing the Click function, whenever an item from the list item is CLICKED.
 
-### 2) Run the Angular app (Angular 19)
-From:
+---- INSTRUCTIONS TO EXECUTE AND TEST THE Employee CRUD part:
 
-`ng19NP_MAT/`
+1. Stop running the NG server by typing command: CTRL+C twice on the console.
 
-Install and run:
+2. Go to the file src\app\app.component.html and comment out existing lines. Then add
+add the following line:
 
-```bash
-npm install
-ng serve
-```
+                        <router-outlet />
 
-Open:
-- `http://localhost:4200/employee-data` (Employee CRUD)
-- `http://localhost:4200/autocomplete` (Autocomplete demo)
-- `http://localhost:4200/input` (Input demo)
+3. Go to the file src\app\app.component.ts and comment out this line:
 
----
+            imports: [ListItemDataComponent],
 
-## API endpoints used
-- `GET/POST` `https://localhost:7271/api/employeemaster`
-- `GET/PUT/DELETE` `https://localhost:7271/api/employeemaster/{id}`
+ Then add add/uncomment the following line:
 
----
+            imports: [RouterOutlet],
 
-## Project structure (high level)
+4. Run your NG server with the command: npx ng s
 
-- `ng19NP_MAT/` — Angular 19 app
-  - `src/app/employee-data` — employee list + modal CRUD UI
-  - `src/app/component/autocomplete` — Material autocomplete demo
-  - `src/app/input` — Material input demo
-  - `src/app/service` — API calls
-- `API/Employee.Api/` — .NET 8 Web API
-  - `Controllers/EmployeeMasterController.cs` — CRUD controller
-  - `Model/EmployeeDbContext.cs` — EF Core DbContext
+5. Open a browser and go to the link:
 
----
+        http://localhost:4200/employee-data
 
-## Troubleshooting
+6. THERE IS A CATCH! when "Adding/Editing" Employee objects:
 
-### Angular shows `net::ERR_TIMED_OUT` calling the API
-This usually means the API is not reachable or is blocked/hanging on DB connection.
+        MAKE SURE you enter a value of 10 characters in the field "Contact No"
+        AND 10 ONLY (no less, no more) or the app will not Save/Update the employee you're working on. I'm currently working on improvements regarding error messages so the user won't be left guessing what happened with his "employee" Adding/Editing.
 
-- Confirm API is running:
-  - `https://localhost:7271/weatherforecast`
-- Confirm endpoint responds:
-  - `curl -k https://localhost:7271/api/employeemaster`
-- If the API hangs or errors, re-check the SQL Server instance name:
-  - Common values: `MACHINE\\SQLEXPRESS` / `localhost\\SQLEXPRESS`
+## Highlights
 
-### API starts but returns 500 (DB/table not found)
-This project expects a SQL Server DB with the required tables. If you’re running it on a fresh DB, you’ll need to create the schema (EF migrations or manual script).
+     Some Angular 19 features worth noting:
+    1. Angular Routes
+    2. Components imports.
+    3. Observables.
+    4. Router Outlet.
+    5. Parent-Child notifications through Event Emitter.
+          
+## Contributing
+ This application is intended as a demo that is part of my Portfolio of apps. 
+ I'll update this Portfolio with the latest technologies I have skills on as soon as possible.
 
-### CORS errors in the browser console
-If you see CORS blocks after the API is responding, ensure the backend CORS policy is applied consistently. (Some setups require calling `UseCors("allowCors")` in `Program.cs`.)
-
----
-
-## Notes
-This repo is intentionally a **practice/demo** app. The goal is to show Angular Material patterns plus clean API wiring (not a complete business-domain MVP). For production-style work, see my **SaaS ERP / AI Integration** projects.
+## License
+This project is licensed under the [MIT License](LICENSE).
