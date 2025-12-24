@@ -46,88 +46,81 @@ Example for SQL Server Express on your machine:
 "ConnectionStrings": {
   "testCon": "Server=HP01\\SQLEXPRESS;Database=NG19_TestDb;MultipleActiveResultSets=true;Trusted_Connection=True;TrustServerCertificate=True"
 }
+```
+
 Run the API (Visual Studio or CLI):
+
+```bash
 dotnet run --project API/Employee.Api/Employee.Api/Employee.Api.csproj
+```
 
-Expected default URLs (from launchSettings.json):
-
-HTTPS: https://localhost:7271
-
-HTTP: http://localhost:5032
+Expected default URLs (from `launchSettings.json`):
+- HTTPS: `https://localhost:7271`
+- HTTP: `http://localhost:5032`
 
 Sanity check:
 
+```bash
 curl -k https://localhost:7271/api/employeemaster
+```
 
-2) Run the Angular app (Angular 19)
-
+### 2) Run the Angular app (Angular 19)
 From:
 
-ng19NP_MAT/
+`ng19NP_MAT/`
 
 Install and run:
 
+```bash
 npm install
 ng serve
-
+```
 
 Open:
+- `http://localhost:4200/employee-data` (Employee CRUD)
+- `http://localhost:4200/autocomplete` (Autocomplete demo)
+- `http://localhost:4200/input` (Input demo)
 
-http://localhost:4200/employee-data (Employee CRUD)
+---
 
-http://localhost:4200/autocomplete (Autocomplete demo)
+## API endpoints used
+- `GET/POST` `https://localhost:7271/api/employeemaster`
+- `GET/PUT/DELETE` `https://localhost:7271/api/employeemaster/{id}`
 
-http://localhost:4200/input (Input demo)
+---
 
-API endpoints used
+## Project structure (high level)
 
-GET/POST https://localhost:7271/api/employeemaster
+- `ng19NP_MAT/` — Angular 19 app
+  - `src/app/employee-data` — employee list + modal CRUD UI
+  - `src/app/component/autocomplete` — Material autocomplete demo
+  - `src/app/input` — Material input demo
+  - `src/app/service` — API calls
+- `API/Employee.Api/` — .NET 8 Web API
+  - `Controllers/EmployeeMasterController.cs` — CRUD controller
+  - `Model/EmployeeDbContext.cs` — EF Core DbContext
 
-GET/PUT/DELETE https://localhost:7271/api/employeemaster/{id}
+---
 
-Project structure (high level)
+## Troubleshooting
 
-ng19NP_MAT/ — Angular 19 app
-
-src/app/employee-data — employee list + modal CRUD UI
-
-src/app/component/autocomplete — Material autocomplete demo
-
-src/app/input — Material input demo
-
-src/app/service — API calls
-
-API/Employee.Api/ — .NET 8 Web API
-
-Controllers/EmployeeMasterController.cs — CRUD controller
-
-Model/EmployeeDbContext.cs — EF Core DbContext
-
-Troubleshooting
-Angular shows net::ERR_TIMED_OUT calling the API
-
+### Angular shows `net::ERR_TIMED_OUT` calling the API
 This usually means the API is not reachable or is blocked/hanging on DB connection.
 
-Confirm API is running:
+- Confirm API is running:
+  - `https://localhost:7271/weatherforecast`
+- Confirm endpoint responds:
+  - `curl -k https://localhost:7271/api/employeemaster`
+- If the API hangs or errors, re-check the SQL Server instance name:
+  - Common values: `MACHINE\\SQLEXPRESS` / `localhost\\SQLEXPRESS`
 
-https://localhost:7271/weatherforecast
-
-Confirm endpoint responds:
-
-curl -k https://localhost:7271/api/employeemaster
-
-If the API hangs or errors, re-check the SQL Server instance name:
-
-Common values: MACHINE\\SQLEXPRESS / localhost\\SQLEXPRESS
-
-API starts but returns 500 (DB/table not found)
-
+### API starts but returns 500 (DB/table not found)
 This project expects a SQL Server DB with the required tables. If you’re running it on a fresh DB, you’ll need to create the schema (EF migrations or manual script).
 
-CORS errors in the browser console
+### CORS errors in the browser console
+If you see CORS blocks after the API is responding, ensure the backend CORS policy is applied consistently. (Some setups require calling `UseCors("allowCors")` in `Program.cs`.)
 
-If you see CORS blocks after the API is responding, ensure the backend CORS policy is applied consistently. (Some setups require calling UseCors("allowCors") in Program.cs.)
+---
 
-Notes
-
-This repo is intentionally a practice/demo app. The goal is to show Angular Material patterns plus clean API wiring (not a complete business-domain MVP). For production-style work, see my SaaS ERP / AI Integration projects.
+## Notes
+This repo is intentionally a **practice/demo** app. The goal is to show Angular Material patterns plus clean API wiring (not a complete business-domain MVP). For production-style work, see my **SaaS ERP / AI Integration** projects.
